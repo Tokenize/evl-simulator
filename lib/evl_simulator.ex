@@ -3,16 +3,16 @@ defmodule EvlSimulator do
   Documentation for EvlSimulator.
   """
 
-  @doc """
-  Hello world.
+  require Logger
+  use Application
 
-  ## Examples
+  def start(_type, _args) do
+    Logger.info("Starting EvlSimulator...")
 
-      iex> EvlSimulator.hello
-      :world
+    EvlSimulator.Supervisor.start_link
+  end
 
-  """
-  def hello do
-    :world
+  def stop(_state) do
+    Logger.info("Stopping EvlSimulator...")
   end
 end
