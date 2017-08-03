@@ -16,9 +16,21 @@ defmodule EvlSimulator.Connection do
     {:ok, state, 0}
   end
 
+  def handle_info({:tcp, socket, "005" <> _trailer = payload}, state) do
+    Logger.debug "Receiving Network Login request"
+
+    {:ok, decoded_payload} = EvlSimulator.TPI.decode(payload)
+
+    :ok = do_acknowledge(socket, decoded_payload)
+    :ok = do_login_response(socket, decoded_payload)
+
+    {:noreply, state}
+  end
+
   def handle_info({:tcp, socket, payload}, state) do
     Logger.info("We got: #{inspect payload}")
-    :gen_tcp.send(socket, "echo: #{payload}\n")
+
+    :ok = do_acknowledge(socket, payload)
 
     {:noreply, state}
   end
@@ -40,10 +52,36 @@ defmodule EvlSimulator.Connection do
     {:ok, listening_socket} = :gen_tcp.listen(state.port, opts)
     {:ok, client_socket} = :gen_tcp.accept(listening_socket)
 
+    :ok = do_request_login(client_socket)
+
     {:noreply, %{listening_socket: listening_socket, client_socket: client_socket}}
   end
 
   def handle_info(_info, state) do
     {:noreply, state}
+  end
+
+  # Private functions
+
+  defp do_request_login(client_socket) do
+    :gen_tcp.send(client_socket, EvlSimulator.TPI.encode("5053"))
+  end
+
+  defp do_login_response(client_socket, payload) do
+    password = EvlSimulator.TPI.data_part(payload)
+    correct_password = Application.get_env(:evl_simulator, :password)
+
+    status = case password do
+      ^correct_password -> "1"
+      _ -> "0"
+    end
+
+    response = "505#{status}" |> EvlSimulator.TPI.encode
+    :gen_tcp.send(client_socket, response)
+  end
+
+  defp do_acknowledge(client_socket, payload) do
+    response = "500#{EvlSimulator.TPI.command_part(payload)}" |> EvlSimulator.TPI.encode
+    :ok = :gen_tcp.send(client_socket, response)
   end
 end

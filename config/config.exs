@@ -3,4 +3,5 @@
 use Mix.Config
 
 config :evl_simulator, port: 4025
+config :evl_simulator, password: "SECRET"
 config :logger, level: :debug
