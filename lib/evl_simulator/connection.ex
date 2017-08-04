@@ -64,7 +64,7 @@ defmodule EvlSimulator.Connection do
   # Private functions
 
   defp do_request_login(client_socket) do
-    :gen_tcp.send(client_socket, EvlSimulator.TPI.encode("5053"))
+    "5053" |> do_send(client_socket)
   end
 
   defp do_login_response(client_socket, payload) do
@@ -76,12 +76,15 @@ defmodule EvlSimulator.Connection do
       _ -> "0"
     end
 
-    response = "505#{status}" |> EvlSimulator.TPI.encode
-    :gen_tcp.send(client_socket, response)
+    "505#{status}" |> do_send(client_socket)
   end
 
   defp do_acknowledge(client_socket, payload) do
-    response = "500#{EvlSimulator.TPI.command_part(payload)}" |> EvlSimulator.TPI.encode
-    :ok = :gen_tcp.send(client_socket, response)
+    "500#{EvlSimulator.TPI.command_part(payload)}" |> do_send(client_socket)
+  end
+
+  defp do_send(payload, client_socket) do
+    encoded_payload = EvlSimulator.TPI.encode(payload)
+    :gen_tcp.send(client_socket, encoded_payload)
   end
 end
