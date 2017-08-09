@@ -9,11 +9,23 @@ defmodule EvlSimulator.Connection do
 
   def start_link do
     port = Application.get_env(:evl_simulator, :port)
-    GenServer.start_link(__MODULE__, %{port: port}, [])
+    GenServer.start_link(__MODULE__, %{port: port}, name: __MODULE__)
   end
 
   def init(state) do
     {:ok, state, 0}
+  end
+
+  def send(payload) do
+    GenServer.cast(__MODULE__, {:send, payload})
+  end
+
+  # GenServer callbacks
+
+  def handle_cast({:send, payload}, state) do
+    payload |> do_send(state.client_socket)
+
+    {:noreply, state}
   end
 
   def handle_info({:tcp, socket, "005" <> _trailer = payload}, state) do

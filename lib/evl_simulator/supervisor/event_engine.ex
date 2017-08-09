@@ -1,14 +1,13 @@
-defmodule EvlSimulator.Supervisor do
+defmodule EvlSimulator.Supervisor.EventEngine do
   use Supervisor
 
   def start_link do
     {:ok, _pid} = Supervisor.start_link(__MODULE__, [])
   end
 
-  def init([]) do
+  def init(_opts) do
     child_processes = [
-      worker(EvlSimulator.Connection, []),
-      supervisor(EvlSimulator.Supervisor.EventEngine, [])
+      worker(EvlSimulator.EventEngine.Activity, [])
     ]
 
     supervise(child_processes, strategy: :one_for_one)
