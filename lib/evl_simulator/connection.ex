@@ -47,16 +47,16 @@ defmodule EvlSimulator.Connection do
     {:noreply, state}
   end
 
-  def handle_info({:tcp_closed, _socket}, _state) do
+  def handle_info({:tcp_closed, _socket}, state) do
     Logger.info("TCP Socket closed.")
 
-    {:stop, :normal}
+    {:stop, :normal, state}
   end
 
-  def handle_info({:tcp_error, socket, reason}, _state) do
+  def handle_info({:tcp_error, socket, reason}, state) do
     Logger.error("TCP Socket #{inspect socket} error: #{reason}")
 
-    {:stop, :normal}
+    {:stop, :normal, state}
   end
 
   def handle_info(:timeout, state) do
