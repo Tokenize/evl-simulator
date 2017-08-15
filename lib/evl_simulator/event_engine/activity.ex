@@ -3,8 +3,11 @@ defmodule EvlSimulator.EventEngine.Activity do
   This module has the methods to emit regular events for zones / partitions opening & closing...etc.
   """
 
+  import EvlSimulator.Event, only: [total_zones: 0]
   require Logger
   require GenServer
+
+  @activity_commands ~w(609 610)
 
   def start_link do
     event_interval = Application.get_env(:evl_simulator, :event_interval, 1000)
@@ -16,7 +19,12 @@ defmodule EvlSimulator.EventEngine.Activity do
   end
 
   def handle_info(:timeout, state) do
-    EvlSimulator.Event.new |> EvlSimulator.Event.to_string |> EvlSimulator.Connection.send
+    %EvlSimulator.Event {
+      command: (@activity_commands |> Enum.random),
+      zone: (1..total_zones() |> Enum.random)
+    }
+    |> EvlSimulator.Event.to_string
+    |> EvlSimulator.Connection.send
 
     {:noreply, state, state.event_interval}
   end
