@@ -34,9 +34,12 @@ defmodule EvlSimulator.Connection do
     {:ok, decoded_payload} = EvlSimulator.TPI.decode(payload)
 
     :ok = do_acknowledge(socket, decoded_payload)
-    :ok = do_login_response(socket, decoded_payload)
+    status = do_login_response(socket, decoded_payload)
 
-    {:noreply, state}
+    case status do
+      :ok -> {:noreply, state}
+      _ -> {:stop, {:shutdown, :authentication_failure}, state}
+    end
   end
 
   def handle_info({:tcp, socket, payload}, state) do
@@ -83,12 +86,19 @@ defmodule EvlSimulator.Connection do
     password = EvlSimulator.TPI.data_part(payload)
     correct_password = Application.get_env(:evl_simulator, :password)
 
-    status = case password do
-      ^correct_password -> "1"
-      _ -> "0"
+    {action, status} = case password do
+      ^correct_password ->
+        {:ok, "1"}
+        Logger.debug("Authentication successful.")
+
+      _ ->
+        {:error, "0"}
+        Logger.debug("Authentication unsucessful.")
     end
 
-    "505#{status}" |> do_send(client_socket)
+    :ok = "505#{status}" |> do_send(client_socket)
+
+    action
   end
 
   defp do_acknowledge(client_socket, payload) do
