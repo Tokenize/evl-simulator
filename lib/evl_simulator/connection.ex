@@ -88,12 +88,12 @@ defmodule EvlSimulator.Connection do
 
     {action, status} = case password do
       ^correct_password ->
-        {:ok, "1"}
         Logger.debug("Authentication successful.")
+        {:ok, "1"}
 
       _ ->
-        {:error, "0"}
         Logger.debug("Authentication unsucessful.")
+        {:error, "0"}
     end
 
     :ok = "505#{status}" |> do_send(client_socket)
