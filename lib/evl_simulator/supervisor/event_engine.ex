@@ -7,7 +7,8 @@ defmodule EvlSimulator.Supervisor.EventEngine do
 
   def init(_opts) do
     child_processes = [
-      worker(EvlSimulator.EventEngine.Activity, [])
+      worker(EvlSimulator.EventEngine.Activity, []),
+      worker(EvlSimulator.EventEngine.System, []),
     ]
 
     supervise(child_processes, strategy: :one_for_one)
