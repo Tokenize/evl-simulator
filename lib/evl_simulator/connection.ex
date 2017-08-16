@@ -37,7 +37,10 @@ defmodule EvlSimulator.Connection do
     status = do_login_response(socket, decoded_payload)
 
     case status do
-      :ok -> {:noreply, state}
+      :ok ->
+        do_resume_event_engines()
+        {:noreply, state}
+
       _ -> {:stop, {:shutdown, :authentication_failure}, state}
     end
   end
@@ -76,6 +79,10 @@ defmodule EvlSimulator.Connection do
     {:noreply, state}
   end
 
+  def terminate(_reason, _state) do
+    do_pause_event_engines()
+  end
+
   # Private functions
 
   defp do_request_login(client_socket) do
@@ -108,5 +115,17 @@ defmodule EvlSimulator.Connection do
   defp do_send(payload, client_socket) do
     encoded_payload = EvlSimulator.TPI.encode(payload)
     :gen_tcp.send(client_socket, encoded_payload)
+  end
+
+  defp do_resume_event_engines do
+    Registry.dispatch(Registry.EvlSimulator, "event_engines", fn engines ->
+      for ({pid, module} <- engines), do: apply(module, :resume, [pid])
+    end)
+  end
+
+  defp do_pause_event_engines do
+    Registry.dispatch(Registry.EvlSimulator, "event_engines", fn engines ->
+      for ({pid, module} <- engines), do: apply(module, :pause, [pid])
+    end)
   end
 end

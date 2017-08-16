@@ -6,8 +6,8 @@ defmodule EvlSimulator.Supervisor.EventEngine do
   end
 
   def init(_opts) do
-    event_engines()
-    |> Enum.map(fn ({engine, opts}) -> worker(engine, [opts]) end)
+    [supervisor(Registry, [:duplicate, Registry.EvlSimulator])]
+    |> Enum.concat(event_engines() |> Enum.map(fn ({engine, opts}) -> worker(engine, [opts]) end))
     |> supervise(strategy: :one_for_one)
   end
 

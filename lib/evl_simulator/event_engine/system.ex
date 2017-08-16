@@ -19,10 +19,36 @@ defmodule EvlSimulator.EventEngine.System do
   end
 
   def init(opts) do
-    {:ok, opts, opts.event_interval}
+    Registry.register(Registry.EvlSimulator, "event_engines", __MODULE__)
+
+    {:ok, opts, :hibernate}
+  end
+
+  def pause(pid) do
+    GenServer.cast(pid, :pause)
+  end
+
+  def resume(pid) do
+    GenServer.cast(pid, :resume)
+  end
+
+  # GenServer callbacks
+
+  def handle_cast(:pause, state) do
+    Logger.debug("Pausing #{__MODULE__} event generation.")
+
+    {:noreply, state, :hibernate}
+  end
+
+  def handle_cast(:resume, state) do
+    Logger.debug("Resuming #{__MODULE__} event generation.")
+
+    {:noreply, state, state.event_interval}
   end
 
   def handle_info(:timeout, state) do
+    Logger.debug("Generating #{__MODULE__} event.")
+
     @events
     |> Enum.random
     |> do_generate_event
