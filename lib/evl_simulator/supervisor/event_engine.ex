@@ -6,11 +6,13 @@ defmodule EvlSimulator.Supervisor.EventEngine do
   end
 
   def init(_opts) do
-    child_processes = [
-      worker(EvlSimulator.EventEngine.Activity, []),
-      worker(EvlSimulator.EventEngine.System, []),
-    ]
+    event_engines()
+    |> Enum.map(fn ({engine, opts}) -> worker(engine, [opts]) end)
+    |> supervise(strategy: :one_for_one)
+  end
 
-    supervise(child_processes, strategy: :one_for_one)
+  # Private functions
+  defp event_engines do
+    Application.get_env(:evl_simulator, :event_engines, [])
   end
 end

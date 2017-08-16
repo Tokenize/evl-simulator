@@ -9,9 +9,10 @@ defmodule EvlSimulator.EventEngine.Activity do
 
   @activity_commands ~w(609 610)
 
-  def start_link do
-    event_interval = Application.get_env(:evl_simulator, :event_interval, 1000)
-    GenServer.start_link(__MODULE__, %{event_interval: event_interval}, [])
+  def start_link(opts = %{}) do
+    Logger.debug("#{__MODULE__}.start_link (#{inspect opts})")
+
+    GenServer.start_link(__MODULE__, opts, [])
   end
 
   def init(opts) do
