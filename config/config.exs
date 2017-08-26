@@ -8,6 +8,7 @@ config :evl_simulator, total_zones: 6
 config :evl_simulator, total_partitions: 1
 config :evl_simulator, event_engines: [
   {EvlSimulator.EventEngine.Activity, %{event_interval: 1000}},
-  {EvlSimulator.EventEngine.System, %{event_interval: 10000}}
+  {EvlSimulator.EventEngine.System, %{event_interval: 10000}},
+  {EvlSimulator.EventEngine.Alarm, %{event_interval: 20000}}
 ]
 config :logger, level: :debug

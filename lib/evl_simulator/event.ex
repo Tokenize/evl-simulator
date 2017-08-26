@@ -3,12 +3,38 @@ defmodule EvlSimulator.Event do
   This module includes the needed functions and structure to return a simulated TPI event.
   """
 
-  defstruct [:command, :zone, :partition]
+  defstruct [:command, :zone, :partition, :mode, :user]
 
   def to_string(%EvlSimulator.Event{partition: nil, zone: zone} = event) when is_integer(zone) do
     [
       event.command,
       event.zone |> Integer.to_string |> String.pad_leading(3, "0")
+    ]
+    |> Enum.join("")
+  end
+
+  def to_string(%EvlSimulator.Event{partition: nil, user: user} = event) when is_integer(user) do
+    [
+      event.command,
+      event.user |> Integer.to_string |> String.pad_leading(4, "0")
+    ]
+    |> Enum.join("")
+  end
+
+  def to_string(%EvlSimulator.Event{partition: partition, mode: mode} = event) when is_integer(partition) and is_integer(mode) do
+    [
+      event.command,
+      event.partition |> Integer.to_string,
+      event.mode |> Integer.to_string
+    ]
+    |> Enum.join("")
+  end
+
+  def to_string(%EvlSimulator.Event{partition: partition, user: user} = event) when is_integer(partition) and is_integer(user) do
+    [
+      event.command,
+      event.partition |> Integer.to_string,
+      event.user |> Integer.to_string |> String.pad_leading(4, "0")
     ]
     |> Enum.join("")
   end
