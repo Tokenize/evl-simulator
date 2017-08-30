@@ -9,8 +9,9 @@ defmodule EvlSimulator.EventEngine.System do
 
   @system_events ~w(501 560 631 632 800 801 802 803 806 807 814 816 829 830 842 843)
   @partition_events ~w(663 664 670 671 840 841)
-  @partition_zone_events ~w(603 604 605 606)
-  @events @system_events ++ @partition_events ++ @partition_zone_events
+  @partition_zone_events ~w(603 604)
+  @zone_events ~w(605 606)
+  @events @system_events ++ @partition_events ++ @partition_zone_events ++ @zone_events
 
   def start_link(opts = %{}) do
     Logger.debug("#{__MODULE__}.start_link (#{inspect opts})")
@@ -75,6 +76,13 @@ defmodule EvlSimulator.EventEngine.System do
     %EvlSimulator.Event {
       command: event_code,
       partition: (1..total_partitions() |> Enum.random),
+      zone: (1..total_zones() |> Enum.random)
+    }
+  end
+
+  defp do_generate_event(event_code) when event_code in @zone_events do
+    %EvlSimulator.Event {
+      command: event_code,
       zone: (1..total_zones() |> Enum.random)
     }
   end
