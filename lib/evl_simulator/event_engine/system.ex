@@ -6,57 +6,22 @@ defmodule EvlSimulator.EventEngine.System do
   import EvlSimulator.Event, only: [total_partitions: 0, total_zones: 0]
   require Logger
   require GenServer
+  use EvlSimulator.EventEngine
 
   @system_events ~w(501 560 631 632 800 801 802 803 806 807 814 816 829 830 842 843)
   @partition_events ~w(663 664 670 671 840 841)
   @partition_zone_events ~w(603 604)
   @zone_events ~w(605 606)
-  @events @system_events ++ @partition_events ++ @partition_zone_events ++ @zone_events
 
-  def start_link(opts = %{}) do
-    Logger.debug("#{__MODULE__}.start_link (#{inspect opts})")
+  # EventEngine overrides
 
-    GenServer.start_link(__MODULE__, opts, [])
+  def events do
+    @system_events ++ @partition_events ++ @partition_zone_events ++ @zone_events
   end
 
-  def init(opts) do
-    Registry.register(Registry.EvlSimulator, "event_engines", __MODULE__)
-
-    {:ok, opts, :hibernate}
-  end
-
-  def pause(pid) do
-    GenServer.cast(pid, :pause)
-  end
-
-  def resume(pid) do
-    GenServer.cast(pid, :resume)
-  end
-
-  # GenServer callbacks
-
-  def handle_cast(:pause, state) do
-    Logger.debug("Pausing #{__MODULE__} event generation.")
-
-    {:noreply, state, :hibernate}
-  end
-
-  def handle_cast(:resume, state) do
-    Logger.debug("Resuming #{__MODULE__} event generation.")
-
-    {:noreply, state, state.event_interval}
-  end
-
-  def handle_info(:timeout, state) do
-    Logger.debug("Generating #{__MODULE__} event.")
-
-    @events
-    |> Enum.random
+  def generate_event(event_code) do
+    event_code
     |> do_generate_event
-    |> EvlSimulator.Event.to_string
-    |> EvlSimulator.Connection.send
-
-    {:noreply, state, state.event_interval}
   end
 
   # Private functions
