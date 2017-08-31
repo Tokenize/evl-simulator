@@ -34,7 +34,7 @@ Edit *config/config.exs* and make the following changes:
 config :evl_simulator, event_engines: []
 ```
 
-Run ```iex -S mix``` then generate the methods directly by doing the following:
+Run ```iex -S mix``` then generate the events directly by doing the following:
 
 ```elixir
 # If you want to use the Event struct then you can do
@@ -42,7 +42,7 @@ Run ```iex -S mix``` then generate the methods directly by doing the following:
 |> EvlSimulator.Event.to_string
 |> EvlSimulator.Connection.send
 
-# If you know raw string for the event and its parameters then pass it directly to
+# If you know the raw string for the event and its parameters then pass it directly to
 # the connection module
 "6091" |> EvlSimulator.Connection.send
 ```
