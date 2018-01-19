@@ -29,7 +29,7 @@ defmodule EvlSimulator.Connection do
   end
 
   def handle_info({:tcp, socket, "005" <> _trailer = payload}, state) do
-    Logger.debug "Receiving Network Login request"
+    Logger.debug("Receiving Network Login request")
 
     {:ok, decoded_payload} = EvlSimulator.TPI.decode(payload)
 
@@ -41,12 +41,13 @@ defmodule EvlSimulator.Connection do
         do_resume_event_engines()
         {:noreply, state}
 
-      _ -> {:stop, {:shutdown, :authentication_failure}, state}
+      _ ->
+        {:stop, {:shutdown, :authentication_failure}, state}
     end
   end
 
   def handle_info({:tcp, socket, payload}, state) do
-    Logger.info("We got: #{inspect payload}")
+    Logger.info("We got: #{inspect(payload)}")
 
     :ok = do_acknowledge(socket, payload)
 
@@ -60,7 +61,7 @@ defmodule EvlSimulator.Connection do
   end
 
   def handle_info({:tcp_error, socket, reason}, state) do
-    Logger.error("TCP Socket #{inspect socket} error: #{reason}")
+    Logger.error("TCP Socket #{inspect(socket)} error: #{reason}")
 
     {:stop, :normal, state}
   end
@@ -93,15 +94,16 @@ defmodule EvlSimulator.Connection do
     password = EvlSimulator.TPI.data_part(payload)
     correct_password = Application.get_env(:evl_simulator, :password)
 
-    {action, status} = case password do
-      ^correct_password ->
-        Logger.debug("Authentication successful.")
-        {:ok, "1"}
+    {action, status} =
+      case password do
+        ^correct_password ->
+          Logger.debug("Authentication successful.")
+          {:ok, "1"}
 
-      _ ->
-        Logger.debug("Authentication unsucessful.")
-        {:error, "0"}
-    end
+        _ ->
+          Logger.debug("Authentication unsucessful.")
+          {:error, "0"}
+      end
 
     :ok = "505#{status}" |> do_send(client_socket)
 
@@ -119,13 +121,13 @@ defmodule EvlSimulator.Connection do
 
   defp do_resume_event_engines do
     Registry.dispatch(Registry.EvlSimulator, "event_engines", fn engines ->
-      for ({pid, module} <- engines), do: apply(module, :resume, [pid])
+      for {pid, module} <- engines, do: apply(module, :resume, [pid])
     end)
   end
 
   defp do_pause_event_engines do
     Registry.dispatch(Registry.EvlSimulator, "event_engines", fn engines ->
-      for ({pid, module} <- engines), do: apply(module, :pause, [pid])
+      for {pid, module} <- engines, do: apply(module, :pause, [pid])
     end)
   end
 end

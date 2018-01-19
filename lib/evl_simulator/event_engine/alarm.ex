@@ -17,7 +17,8 @@ defmodule EvlSimulator.EventEngine.Alarm do
   # EventEngine overrides
 
   def events do
-    @partition_events ++ @partition_mode_events ++ @partition_user_events ++ @partition_zone_events
+    @partition_events ++
+      @partition_mode_events ++ @partition_user_events ++ @partition_zone_events
   end
 
   def generate_event(event_code) do
@@ -28,40 +29,40 @@ defmodule EvlSimulator.EventEngine.Alarm do
   # Private functions
 
   defp do_generate_event(event_code) when event_code in @partition_events do
-    %EvlSimulator.Event {
+    %EvlSimulator.Event{
       command: event_code,
-      partition: (1..total_partitions() |> Enum.random)
+      partition: 1..total_partitions() |> Enum.random()
     }
   end
 
   defp do_generate_event(event_code) when event_code in @special_events do
-    %EvlSimulator.Event {
+    %EvlSimulator.Event{
       command: event_code,
       user: 0
     }
   end
 
   defp do_generate_event(event_code) when event_code in @partition_mode_events do
-    %EvlSimulator.Event {
+    %EvlSimulator.Event{
       command: event_code,
-      partition: (1..total_partitions() |> Enum.random),
-      mode: (0..3 |> Enum.random)
+      partition: 1..total_partitions() |> Enum.random(),
+      mode: 0..3 |> Enum.random()
     }
   end
 
   defp do_generate_event(event_code) when event_code in @partition_user_events do
-    %EvlSimulator.Event {
+    %EvlSimulator.Event{
       command: event_code,
-      partition: (1..total_partitions() |> Enum.random),
-      user: (1..42 |> Enum.random)
+      partition: 1..total_partitions() |> Enum.random(),
+      user: 1..42 |> Enum.random()
     }
   end
 
   defp do_generate_event(event_code) when event_code in @partition_zone_events do
-    %EvlSimulator.Event {
+    %EvlSimulator.Event{
       command: event_code,
-      partition: (1..total_partitions() |> Enum.random),
-      zone: (1..total_zones() |> Enum.random)
+      partition: 1..total_partitions() |> Enum.random(),
+      zone: 1..total_zones() |> Enum.random()
     }
   end
 end

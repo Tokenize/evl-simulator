@@ -9,7 +9,7 @@ defmodule EvlSimulator do
   def start(_type, _args) do
     Logger.info("Starting EvlSimulator...")
 
-    EvlSimulator.Supervisor.start_link
+    EvlSimulator.Supervisor.start_link()
   end
 
   def stop(_state) do

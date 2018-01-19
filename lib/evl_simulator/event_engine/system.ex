@@ -27,28 +27,28 @@ defmodule EvlSimulator.EventEngine.System do
   # Private functions
 
   defp do_generate_event(event_code) when event_code in @system_events do
-    %EvlSimulator.Event { command: event_code }
+    %EvlSimulator.Event{command: event_code}
   end
 
   defp do_generate_event(event_code) when event_code in @partition_events do
-    %EvlSimulator.Event {
+    %EvlSimulator.Event{
       command: event_code,
-      partition: (1..total_partitions() |> Enum.random)
+      partition: 1..total_partitions() |> Enum.random()
     }
   end
 
   defp do_generate_event(event_code) when event_code in @partition_zone_events do
-    %EvlSimulator.Event {
+    %EvlSimulator.Event{
       command: event_code,
-      partition: (1..total_partitions() |> Enum.random),
-      zone: (1..total_zones() |> Enum.random)
+      partition: 1..total_partitions() |> Enum.random(),
+      zone: 1..total_zones() |> Enum.random()
     }
   end
 
   defp do_generate_event(event_code) when event_code in @zone_events do
-    %EvlSimulator.Event {
+    %EvlSimulator.Event{
       command: event_code,
-      zone: (1..total_zones() |> Enum.random)
+      zone: 1..total_zones() |> Enum.random()
     }
   end
 end

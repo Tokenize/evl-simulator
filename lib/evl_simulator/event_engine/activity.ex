@@ -15,9 +15,9 @@ defmodule EvlSimulator.EventEngine.Activity do
   end
 
   def generate_event(event_code) do
-    %EvlSimulator.Event {
+    %EvlSimulator.Event{
       command: event_code,
-      zone: (1..total_zones() |> Enum.random)
+      zone: 1..total_zones() |> Enum.random()
     }
   end
 end

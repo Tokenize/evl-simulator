@@ -11,7 +11,7 @@ defmodule EvlSimulator.EventEngine do
       @behaviour EvlSimulator.EventEngine
 
       def start_link(opts = %{}) do
-        Logger.debug("#{__MODULE__}.start_link (#{inspect opts})")
+        Logger.debug("#{__MODULE__}.start_link (#{inspect(opts)})")
 
         GenServer.start_link(__MODULE__, opts, [])
       end
@@ -68,15 +68,15 @@ defmodule EvlSimulator.EventEngine do
         Logger.debug("Generating #{__MODULE__} event.")
 
         events()
-        |> Enum.random
+        |> Enum.random()
         |> generate_event
-        |> EvlSimulator.Event.to_string
-        |> EvlSimulator.Connection.send
+        |> EvlSimulator.Event.to_string()
+        |> EvlSimulator.Connection.send()
 
         {:noreply, state, state.event_interval}
       end
 
-      defoverridable [generate_event: 1, events: 0]
+      defoverridable generate_event: 1, events: 0
     end
   end
 end
