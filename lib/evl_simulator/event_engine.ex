@@ -10,7 +10,7 @@ defmodule EvlSimulator.EventEngine do
     quote location: :keep do
       @behaviour EvlSimulator.EventEngine
 
-      def start_link(opts = %{}) do
+      def child_spec(opts) do
         Logger.debug("#{__MODULE__}.start_link (#{inspect(opts)})")
 
         GenServer.start_link(__MODULE__, opts, [])
@@ -60,11 +60,11 @@ defmodule EvlSimulator.EventEngine do
         {:noreply, state, :hibernate}
       end
 
-      def handle_cast(:resume, state) do
-        {:noreply, state, state.event_interval}
+      def handle_cast(:resume, [event_interval: event_interval] = state) do
+        {:noreply, state, event_interval}
       end
 
-      def handle_info(:timeout, state) do
+      def handle_info(:timeout, [event_interval: event_interval] = state) do
         Logger.debug("Generating #{__MODULE__} event.")
 
         events()
@@ -73,7 +73,7 @@ defmodule EvlSimulator.EventEngine do
         |> EvlSimulator.Event.to_string()
         |> EvlSimulator.Connection.send()
 
-        {:noreply, state, state.event_interval}
+        {:noreply, state, event_interval}
       end
 
       defoverridable generate_event: 1, events: 0
