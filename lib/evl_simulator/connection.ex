@@ -7,7 +7,16 @@ defmodule EvlSimulator.Connection do
   require Logger
   use GenServer
 
-  def start_link do
+  def child_spec(opts) do
+    %{
+      id: __MODULE__,
+      restart: :permanent,
+      start: {__MODULE__, :start_link, opts},
+      type: :worker
+    }
+  end
+
+  def start_link(_opts \\ []) do
     port = Application.get_env(:evl_simulator, :port)
     GenServer.start_link(__MODULE__, %{port: port}, name: __MODULE__)
   end

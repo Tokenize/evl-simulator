@@ -1,14 +1,14 @@
 defmodule EvlSimulator.Supervisor.EventEngine do
   use Supervisor
 
-  def start_link do
-    {:ok, _pid} = Supervisor.start_link(__MODULE__, [])
+  def start_link(opts) do
+    {:ok, _pid} = Supervisor.start_link(__MODULE__, opts)
   end
 
   def init(_opts) do
-    [supervisor(Registry, [:duplicate, Registry.EvlSimulator])]
-    |> Enum.concat(event_engines() |> Enum.map(fn {engine, opts} -> worker(engine, [opts]) end))
-    |> supervise(strategy: :one_for_one)
+    [{Registry, keys: :duplicate, name: Registry.EvlSimulator}]
+    |> Enum.concat(event_engines() |> Enum.map(fn {engine, opts} -> {engine, opts} end))
+    |> Supervisor.init(strategy: :one_for_one)
   end
 
   # Private functions

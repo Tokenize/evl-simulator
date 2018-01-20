@@ -11,6 +11,15 @@ defmodule EvlSimulator.EventEngine do
       @behaviour EvlSimulator.EventEngine
 
       def child_spec(opts) do
+        %{
+          id: __MODULE__,
+          restart: :permanent,
+          start: {__MODULE__, :start_link, [opts]},
+          type: :worker
+        }
+      end
+
+      def start_link(opts) do
         Logger.debug("#{__MODULE__}.start_link (#{inspect(opts)})")
 
         GenServer.start_link(__MODULE__, opts, [])
