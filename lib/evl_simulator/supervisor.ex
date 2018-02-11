@@ -8,7 +8,8 @@ defmodule EvlSimulator.Supervisor do
   def init([]) do
     child_processes = [
       EvlSimulator.Connection,
-      EvlSimulator.Supervisor.EventEngine
+      EvlSimulator.Supervisor.EventEngine,
+      EvlSimulator.Supervisor.StatusReport
     ]
 
     Supervisor.init(child_processes, strategy: :one_for_one)

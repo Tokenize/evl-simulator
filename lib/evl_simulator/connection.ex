@@ -55,6 +55,18 @@ defmodule EvlSimulator.Connection do
     end
   end
 
+  def handle_info({:tcp, socket, "001" <> _trailer = payload}, state) do
+    Logger.debug("Receiving Status Report request")
+
+    {:ok, decoded_payload} = EvlSimulator.TPI.decode(payload)
+
+    :ok = do_acknowledge(socket, decoded_payload)
+    EvlSimulator.Supervisor.StatusReport.start_child()
+    do_resume_event_engines()
+
+    {:noreply, state}
+  end
+
   def handle_info({:tcp, socket, payload}, state) do
     Logger.info("We got: #{inspect(payload)}")
 
