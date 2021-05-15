@@ -6,6 +6,7 @@ config :evl_simulator, port: 4025
 config :evl_simulator, password: "SECRET"
 config :evl_simulator, total_zones: 6
 config :evl_simulator, total_partitions: 1
+config :evl_simulator, fuzzer: {EvlDaemon.Fuzzer.Connection, [interval: 5000]}
 
 config :evl_simulator,
   event_engines: [
