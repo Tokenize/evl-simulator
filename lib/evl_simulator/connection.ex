@@ -136,8 +136,22 @@ defmodule EvlSimulator.Connection do
   end
 
   defp do_send(payload, client_socket) do
-    encoded_payload = EvlSimulator.TPI.encode(payload)
+    fuzzer_config = Application.get_env(:evl_simulator, :fuzzer)
+    encoded_payload = do_prepare_payload(payload, fuzzer_config)
+
     :gen_tcp.send(client_socket, encoded_payload)
+  end
+
+  defp do_prepare_payload(payload, fuzzer_config) when is_nil(fuzzer_config) do
+    payload
+    |> EvlSimulator.TPI.encode()
+  end
+
+  defp do_prepare_payload(payload, fuzzer_config) do
+    {fuzzer, _interval} = fuzzer_config
+
+    payload
+    |> fuzzer.encode
   end
 
   defp do_resume_event_engines do
