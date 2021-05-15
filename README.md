@@ -46,3 +46,9 @@ Run ```iex -S mix``` then generate the events directly by doing the following:
 # the connection module
 "6091" |> EvlSimulator.Connection.send
 ```
+
+### Fuzzer
+
+You can optionally enable a simple fuzzer (by uncommenting the relevant section in
+*config/config.exs*) which will randomly re-arrange the encoded payload prior to sending
+it to the client every 10_000 msecs (this can be changed in the config).
