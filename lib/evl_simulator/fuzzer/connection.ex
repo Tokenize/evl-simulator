@@ -49,7 +49,7 @@ defmodule EvlSimulator.Fuzzer.Connection do
   # Private functions
 
   defp do_encode(payload, state, _fuzz = true) do
-    updated_state = %{state | last_fuzzed_at: current_timestamp}
+    updated_state = %{state | last_fuzzed_at: current_timestamp()}
     {TPI.encode(payload) |> String.graphemes() |> Enum.shuffle(), updated_state}
   end
 
