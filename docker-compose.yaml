@@ -1,0 +1,9 @@
+version: '3'
+services:
+  evlsimulator:
+    restart: 'no'
+    build: .
+    ports:
+      - "4025:4025"
+    stdin_open: true
+    tty: true
