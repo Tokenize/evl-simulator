@@ -1,4 +1,4 @@
-FROM elixir:otp-24-slim
+FROM elixir:1.15
 WORKDIR /app
 COPY . .
 ENTRYPOINT ["iex", "-S", "mix"]
