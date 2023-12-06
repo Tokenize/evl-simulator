@@ -17,6 +17,15 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/evl_simulator](https://hexdocs.pm/evl_simulator).
 
+### Docker
+
+The provided Dockerfile can be used to install and run evl-simulator interactively without requiring Erlang or Elixir to be installed on your system.
+
+```shell
+docker build -t evlsimulator:latest .
+docker run -it -p 4025:4025 evlsimulator:latest
+```
+
 ## Usage
 
 You can use the simulator in one of the two following modes:
